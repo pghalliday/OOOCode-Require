@@ -1,7 +1,7 @@
 OOOCode-Require
 ===============
 
-An OOOCode module for managing and dynamically linking shared shared OOOCode modules
+An OOOCode module for managing and dynamically linking shared OOOCode modules
 
 ## Features
 
@@ -15,17 +15,18 @@ An OOOCode module for managing and dynamically linking shared shared OOOCode mod
 #include "MyClass.h"
 #include "YourClass.h"
 
+Require * require = OOOConstruct(Require, repository);
+
+OOORequireInit(require);
 OOORequire(MyClass);
 OOORequire(YourClass);
-
-Require * require = OOOConstruct(Require, repository);
 
 void onReady() {
 	MyClass * myClass = OOOConstruct(MyClass);
 	YourCLass * yourClass = OOOConstruct(YourClass);
 }
 
-OOORequireLoad(onReady);
+OOOCall(require, load, onReady);
 ```
 
 ## Roadmap
