@@ -10,12 +10,27 @@ An OOOCode module for managing and dynamically linking shared shared OOOCode mod
 ## API
 
 ```C
-Require * require = OOOConstruct(Require, repository, server, track);
+#include "OOOCode.h"
+#include "OOORequire.h"
+#include "MyClass.h"
+#include "YourClass.h"
+
+OOORequire(MyClass);
+OOORequire(YourClass);
+
+Require * require = OOOConstruct(Require, repository);
+
+void onReady() {
+	MyClass * myClass = OOOConstruct(MyClass);
+	YourCLass * yourClass = OOOConstruct(YourClass);
+}
+
+OOORequireLoad(onReady);
 ```
 
 ## Roadmap
 
-- Should load and link modules from a passed in repository structure
+* Should load and link modules from a passed in repository structure
 - Should only load and link the module once, subsequent calls to require should provide the same instance
 - Should load and link modules from the passed in server location if not found in the repository structure
 - Should load and link modules from the passed in track if server cannot be reached
