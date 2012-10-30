@@ -10,12 +10,15 @@ An OOOCode module for managing and dynamically linking shared shared OOOCode mod
 ## API
 
 ```C
-Require * require = OOOConstruct(Require);
+Require * require = OOOConstruct(Require, repository, server, track);
 ```
 
 ## Roadmap
 
-- No backlog items
+- Should load and link modules from a passed in repository structure
+- Should only load and link the module once, subsequent calls to require should provide the same instance
+- Should load and link modules from the passed in server location if not found in the repository structure
+- Should load and link modules from the passed in track if server cannot be reached
 
 ## Contributing
 
@@ -36,17 +39,17 @@ git submodule update
 
 Then the easiest way to work with the project in the OpenTV IDE...
 
-1. I recommend creating a new workspace in the root of the project
+1. Create a new workspace in the root of the project
 1. In the IDE choose **File/Import...**
 1. In the resulting dialog choose **General/Existing Projects Into Workspace** and press **Next**
 1. Choose the **Select Root Directory:** Radio button and **Browse...** to the root of the project
-1. The 4 sub projects should then be listed under **Projects**
-1. Click **Select All** and then click **Finish**
-1. You should then be able to build the projects by choosing **Project/Build All**
+1. A number of projects may be listed under **Projects**
+1. Select the projects in the root, deselect those under the submodules folder and then click **Finish**
+1. You should then be able to build the OpenTV projects by choosing **Project/Build All**
 
-After you have built the projects at least once run the test application in the Virtual Set top box by:
+After you have built the projects at least once run the test application in the Virtual Set top box by...
 
-1. Choosing the **OOOCodeFlow** project on the left
+1. Choosing the **RequireFlow** project on the left
 1. Pressing the green **Run** button at the top
 1. In the resulting dialog choose **Local OpenTV Application** and press **OK**
 
