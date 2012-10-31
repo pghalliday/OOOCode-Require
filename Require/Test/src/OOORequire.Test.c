@@ -1,9 +1,9 @@
 #include "OOOUnitTestDefines.h"
-#include "Require.h"
+#include "OOORequire.h"
 
 OOOTest(Require)
 {
-	Require * pRequire = OOOConstruct(Require);
+	OOORequire * pRequire = OOOConstruct(OOORequire);
 
 	/* Check stuff here */
 	OOOCheck(pRequire != NULL);

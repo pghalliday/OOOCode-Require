@@ -1,6 +1,6 @@
-#include "Require.h"
+#include "OOORequire.h"
 
-#define OOOClass Require
+#define OOOClass OOORequire
 
 OOOPrivateData
 OOOPrivateDataEnd

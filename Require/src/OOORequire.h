@@ -1,9 +1,9 @@
-#ifndef Require_H
-#define Require_H
+#ifndef OOORequire_H
+#define OOORequire_H
 
 #include "OOOCode.h"
 
-#define OOOClass Require
+#define OOOClass OOORequire
 OOODeclare()
 	OOOImplements
 	OOOImplementsEnd
