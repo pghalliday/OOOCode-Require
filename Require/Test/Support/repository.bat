@@ -1,0 +1,1 @@
+%OPENTV%/bin/dumper.exe inputfile=HelloWorld_Module.otv outputfile=HelloWorld_Module.dump output_mode=C

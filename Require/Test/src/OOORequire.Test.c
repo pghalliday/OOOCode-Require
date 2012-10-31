@@ -1,7 +1,9 @@
 #include "OOOUnitTestDefines.h"
 #include "OOORequire.h"
 
-OOOTest(Require)
+#include "repository.h"
+
+OOOTest(OOORequire)
 {
 	OOORequire * pRequire = OOOConstruct(OOORequire);
 
