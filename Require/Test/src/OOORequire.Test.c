@@ -4,10 +4,9 @@
 #include "MockRepository.h"
 #include "OOOMockDebug.h"
 
-#define OOORequired
 #include "HelloWorld.h"
-#undef OOORequired
 
+OOOModuleDeclare(HelloWorld);
 
 #define OOOClass TestRequirer
 OOODeclare()

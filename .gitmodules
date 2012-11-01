@@ -1,9 +1,9 @@
 [submodule "Require/submodules/OOOCode"]
 	path = Require/submodules/OOOCode
 	url = https://github.com/pghalliday/OOOCode.git
-[submodule ".\\Require\\submodules\\Module"]
-	path = .\\Require\\submodules\\Module
+[submodule "Require/submodules/Module"]
+	path = Require/submodules/Module
 	url = https://github.com/pghalliday/OOOCode-Module.git
-[submodule ".\\Require\\submodules\\HelloWorld"]
-	path = .\\Require\\submodules\\HelloWorld
+[submodule "Require/submodules/HelloWorld"]
+	path = Require/submodules/HelloWorld
 	url = https://github.com/pghalliday/OOOCode-HelloWorld.git
