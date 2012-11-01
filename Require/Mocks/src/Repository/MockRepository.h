@@ -1,12 +1,13 @@
-#ifndef OOORequire_H
-#define OOORequire_H
+#ifndef MockRepository_H
+#define MockRepository_H
 
 #include "OOOCode.h"
 #include "OOOIRepository.h"
 
-#define OOOClass OOORequire
-OOODeclare(OOOIRepository * iRepository)
+#define OOOClass MockRepository
+OOODeclare()
 	OOOImplements
+		OOOImplement(OOOIRepository)
 	OOOImplementsEnd
 	OOOExports
 	OOOExportsEnd

@@ -3,6 +3,7 @@
 #define OOOClass OOORequire
 
 OOOPrivateData
+	OOOIRepository * iRepository;
 OOOPrivateDataEnd
 
 OOODestructor
@@ -10,10 +11,12 @@ OOODestructor
 }
 OOODestructorEnd
 
-OOOConstructor()
+OOOConstructor(OOOIRepository * iRepository)
 {
 	OOOMapMethods
 	OOOMapMethodsEnd
+
+	OOOF(iRepository) = iRepository;
 }
 OOOConstructorEnd
 
