@@ -1,4 +1,4 @@
 Technical Tasks
 ===============
 
-- create a test DLL or 2
+- Tests for linking only once for multiple calls to get 

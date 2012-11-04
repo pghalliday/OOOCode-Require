@@ -5,34 +5,95 @@ An OOOCode module for managing and dynamically linking shared OOOCode modules
 
 ## Features
 
-- Watch this space
+- Should load and link modules from a passed in repository structure
 
 ## API
 
 ```C
-#include "OOOCode.h"
 #include "OOORequire.h"
-#include "MyClass.h"
-#include "YourClass.h"
 
-Require * require = OOOConstruct(Require, repository);
+// The repository used should implement the OOOIRepository interface
+#include "Repository.h"
 
-OOORequireInit(require);
-OOORequire(MyClass);
-OOORequire(YourClass);
+// Have to include the headers for required classes so that they are defined
+#include "HelloWorld.h"
 
-void onReady() {
-	MyClass * myClass = OOOConstruct(MyClass);
-	YourCLass * yourClass = OOOConstruct(YourClass);
+// Have to module declare the required classes so that they can be linked at run time
+OOOModuleDeclare(HelloWorld);
+
+#define OOOClass MyApplication
+OOODeclare()
+	OOOImplements
+		OOOImplement(OOOIRequirer)
+	OOOImplementsEnd
+	OOOExports
+		OOOExport(void, start)
+	OOOExportsEnd
+OOODeclareEnd
+
+OOOPrivateData
+	Repository * pRepository;
+	OOORequire * pRequire;
+OOOPrivateDataEnd
+
+OOODestructor
+{
+	OOODestroy(OOOF(pRequire));
+	OOODestroy(OOOF(pRepository));
 }
+OOODestructorEnd
 
-OOOCall(require, load, onReady);
+OOOMethod(void, start)
+{
+	// Require the HelloWorld_Module
+	OOOCall(OOOF(pRequire), get, "HelloWorld_Module", OOOCast(OOOIRequirer, OOOThis));
+}
+OOOMethodEnd
+
+OOOMethod(void, module, char * szModuleName, OOOModule * pModule)
+{
+	/* name should be correct */
+	if (O_strcmp(szModuleName, "HelloWorld_Module") == 0)
+	{
+		/* Should be able to link the HelloWorld class */
+		OOOModuleLink(pModule, HelloWorld);
+
+		/* 
+		Should now be able to instantiate the HelloWorld class (in fact
+		it should now be possible to call the HelloWorld constructor from any
+		file that includes the HelloWorld header)
+		*/
+		{
+			HelloWorld * pHelloWorld = OOOConstruct(HelloWorld);
+			OOOCall(pHelloWorld, sayHello);
+			OOODestroy(pHelloWorld);
+		}	
+	}
+}
+OOOMethodEnd
+
+OOOConstructor()
+{
+	#define OOOInterface OOOIRequirer
+	OOOMapVirtuals
+		OOOMapVirtual(module)
+	OOOMapVirtualsEnd
+	#undef OOOInterface
+
+	OOOMapMethods
+		OOOMapMethod(start)
+	OOOMapMethodsEnd
+
+	OOOF(pRepository) = OOOConstruct(Repository);
+	OOOF(pRequire) = OOOConstruct(OOORequire, OOOCast(OOOIRepository, OOOF(pRepository)));
+}
+OOOConstructorEnd
+#undef OOOClass
 ```
 
 ## Roadmap
 
-* Should load and link modules from a passed in repository structure
-- Should only load and link the module once, subsequent calls to require should provide the same instance
+* Should only load and link the module once, subsequent calls to require should provide the same instance
 - Should load and link modules from the passed in server location if not found in the repository structure
 - Should load and link modules from the passed in track if server cannot be reached
 
