@@ -6,6 +6,7 @@ An OOOCode module for managing and dynamically linking shared OOOCode modules
 ## Features
 
 - Should load and link modules from a passed in repository structure
+- Should only load and link the module once, subsequent calls to require should provide the same instance
 
 ## API
 
@@ -93,7 +94,7 @@ OOOConstructorEnd
 
 ## Roadmap
 
-* Should only load and link the module once, subsequent calls to require should provide the same instance
+* Should cache modules in the filesystem using a managed cache
 - Should load and link modules from the passed in server location if not found in the repository structure
 - Should load and link modules from the passed in track if server cannot be reached
 

@@ -21,6 +21,7 @@ OOODeclareEnd
 OOOPrivateData
 	MockRepository * pMockRepository;
 	OOORequire * pRequire;
+	OOOModule * pModule;
 OOOPrivateDataEnd
 
 OOODestructor
@@ -39,22 +40,35 @@ OOOMethodEnd
 
 OOOMethod(void, module, char * szModuleName, OOOModule * pModule)
 {
-	/* name should be correct */
-	OOOCheck(O_strcmp(szModuleName, "HelloWorld_Module") == 0);
-
-	/* Should be able to link the HelloWorld class */
-	OOOModuleLink(pModule, HelloWorld);
-
-	/* Should be able to instantiate the HelloWorld class */
+	if (!OOOF(pModule))
 	{
-		OOOBufferedLog * pLog = OOOConstruct(OOOBufferedLog);
-		HelloWorld * pHelloWorld = OOOConstruct(HelloWorld, OOOCast(OOOILog, pLog));
+		/* name should be correct */
+		OOOCheck(O_strcmp(szModuleName, "HelloWorld_Module") == 0);
 
-		OOOCall(pHelloWorld, sayHello);
-		OOOCheck(OOOCall(pLog, check, "Hello, world!"));
+		/* Should be able to link the HelloWorld class */
+		OOOModuleLink(pModule, HelloWorld);
 
-		OOODestroy(pHelloWorld);
-		OOODestroy(pLog);
+		/* Should be able to instantiate the HelloWorld class */
+		{
+			OOOBufferedLog * pLog = OOOConstruct(OOOBufferedLog);
+			HelloWorld * pHelloWorld = OOOConstruct(HelloWorld, OOOCast(OOOILog, pLog));
+
+			OOOCall(pHelloWorld, sayHello);
+			OOOCheck(OOOCall(pLog, check, "Hello, world!"));
+
+			OOODestroy(pHelloWorld);
+			OOODestroy(pLog);
+		}
+
+		OOOF(pModule) = pModule;
+
+		/* now lets see what happens if we get the module again */
+		OOOCall(OOOF(pRequire), get, "HelloWorld_Module", OOOCast(OOOIRequirer, OOOThis));
+	}
+	else
+	{
+		/* should get the same pModule instance */
+		OOOCheck(OOOF(pModule) == pModule);
 	}
 }
 OOOMethodEnd
