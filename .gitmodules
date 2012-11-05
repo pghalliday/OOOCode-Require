@@ -7,3 +7,9 @@
 [submodule "Require/submodules/HelloWorld"]
 	path = Require/submodules/HelloWorld
 	url = https://github.com/pghalliday/OOOCode-HelloWorld.git
+[submodule "Require/submodules/Log"]
+	path = Require/submodules/Log
+	url = https://github.com/pghalliday/OOOCode-Log.git
+[submodule "Require/submodules/UnitTest"]
+	path = Require/submodules/UnitTest
+	url = https://github.com/pghalliday/OOOCode-UnitTest.git

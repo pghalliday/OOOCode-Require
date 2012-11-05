@@ -2,7 +2,7 @@
 #include "OOORequire.h"
 
 #include "MockRepository.h"
-#include "OOOMockDebug.h"
+#include "OOOBufferedLog.h"
 
 #include "HelloWorld.h"
 
@@ -47,14 +47,14 @@ OOOMethod(void, module, char * szModuleName, OOOModule * pModule)
 
 	/* Should be able to instantiate the HelloWorld class */
 	{
-		OOOMockDebug * pDebug = OOOConstruct(OOOMockDebug);
-		HelloWorld * pHelloWorld = OOOConstruct(HelloWorld, OOOCast(OOOIDebug, pDebug));
+		OOOBufferedLog * pLog = OOOConstruct(OOOBufferedLog);
+		HelloWorld * pHelloWorld = OOOConstruct(HelloWorld, OOOCast(OOOILog, pLog));
 
 		OOOCall(pHelloWorld, sayHello);
-		OOOCheck(OOOCall(pDebug, check, "Hello, world!"));
+		OOOCheck(OOOCall(pLog, check, "Hello, world!"));
 
 		OOODestroy(pHelloWorld);
-		OOODestroy(pDebug);
+		OOODestroy(pLog);
 	}
 }
 OOOMethodEnd
