@@ -13,3 +13,6 @@
 [submodule "Require/submodules/UnitTest"]
 	path = Require/submodules/UnitTest
 	url = https://github.com/pghalliday/OOOCode-UnitTest.git
+[submodule "Require/submodules/Error"]
+	path = Require/submodules/Error
+	url = https://github.com/pghalliday/OOOCode-Error.git
