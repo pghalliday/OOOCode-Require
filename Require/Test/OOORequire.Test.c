@@ -2,9 +2,16 @@
 #include "OOORequire.h"
 
 #include "MockRepository.h"
+#include "MockCache.h"
 #include "OOOBufferedLog.h"
 
 #include "HelloWorld.h"
+
+unsigned char HelloWorld_Module[] =
+{
+#include "HelloWorld_Module.dump"
+};
+size_t HelloWorld_Module_uSize = sizeof(HelloWorld_Module);
 
 OOOModuleDeclare(HelloWorld);
 
@@ -20,6 +27,7 @@ OOODeclareEnd
 
 OOOPrivateData
 	MockRepository * pMockRepository;
+	MockCache * pMockCache;
 	OOORequire * pRequire;
 	OOOModule * pModule;
 OOOPrivateDataEnd
@@ -28,6 +36,7 @@ OOODestructor
 {
 	OOODestroy(OOOF(pRequire));
 	OOODestroy(OOOF(pMockRepository));
+	OOODestroy(OOOF(pMockCache));
 }
 OOODestructorEnd
 
@@ -38,10 +47,12 @@ OOOMethod(void, start)
 }
 OOOMethodEnd
 
-OOOMethod(void, module, char * szModuleName, OOOModule * pModule)
+OOOMethod(void, module, OOOIError * iError, char * szModuleName, OOOModule * pModule)
 {
 	if (!OOOF(pModule))
 	{
+		OOOCheck(iError == NULL);
+
 		/* name should be correct */
 		OOOCheck(O_strcmp(szModuleName, "HelloWorld_Module") == 0);
 
@@ -67,8 +78,18 @@ OOOMethod(void, module, char * szModuleName, OOOModule * pModule)
 	}
 	else
 	{
+		OOOCheck(iError == NULL);
+
+		/* name should be correct */
+		OOOCheck(O_strcmp(szModuleName, "HelloWorld_Module") == 0);
+
 		/* should get the same pModule instance */
 		OOOCheck(OOOF(pModule) == pModule);
+
+		/* TODO: should get the module from the cache */
+			/* TODO: reconstruct the require instance with the same cache but an empty repository */
+
+		/* TODO: should report appropriate errors */
 	}
 }
 OOOMethodEnd
@@ -86,7 +107,9 @@ OOOConstructor()
 	OOOMapMethodsEnd
 
 	OOOF(pMockRepository) = OOOConstruct(MockRepository);
-	OOOF(pRequire) = OOOConstruct(OOORequire, OOOCast(OOOIRepository, OOOF(pMockRepository)));
+	OOOCall(OOOF(pMockRepository), add, "HelloWorld_Module", HelloWorld_Module, HelloWorld_Module_uSize);
+	OOOF(pMockCache) = OOOConstruct(MockCache);
+	OOOF(pRequire) = OOOConstruct(OOORequire, OOOCast(OOOIRepository, OOOF(pMockRepository)), OOOCast(OOOICache, OOOF(pMockCache)));
 }
 OOOConstructorEnd
 #undef OOOClass

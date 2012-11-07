@@ -10,6 +10,7 @@ OOODeclare()
 		OOOImplement(OOOIRepository)
 	OOOImplementsEnd
 	OOOExports
+		OOOExport(void, add, char * szName, unsigned char * pData, size_t uSize)
 	OOOExportsEnd
 OOODeclareEnd
 #undef OOOClass

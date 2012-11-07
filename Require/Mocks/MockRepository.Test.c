@@ -1,27 +1,132 @@
 #include "OOOUnitTestDefines.h"
 #include "MockRepository.h"
 
-unsigned char moduleTest[] =
+static char * szApple = "Apple";
+static char * szBanana = "Banana";
+static char * szPear = "Pear";
+
+#define OOOClass TestRepositoryData
+
+OOODeclare()
+	OOOImplements
+		OOOImplement(OOOIRepositoryData)
+	OOOImplementsEnd
+	OOOExports
+		OOOExport(void, start)
+	OOOExportsEnd
+OOODeclareEnd
+
+OOOPrivateData
+	MockRepository * pMockRepository;
+	char * szName;
+	bool bApple;
+	bool bBanana;
+	bool bPear;
+OOOPrivateDataEnd
+
+OOODestructor
 {
-#include "HelloWorld_Module.dump"
-};
-size_t moduleTestSize = sizeof(moduleTest);
+	OOODestroy(OOOF(pMockRepository));
+}
+OOODestructorEnd
+
+OOOMethod(void, start)
+{
+	OOOF(szName) = "APPLE";
+	OOOICall(OOOCast(OOOIRepository, OOOF(pMockRepository)), get, OOOCast(OOOIRepositoryData, OOOThis));
+}
+OOOMethodEnd
+
+OOOMethod(char *, getName)
+{
+	return OOOF(szName);
+}
+OOOMethodEnd
+
+OOOMethod(void, load, OOOIError * iError, unsigned char * pData, size_t uSize)
+{
+	if (O_strcmp(OOOF(szName), "APPLE") == 0 && !OOOF(bApple))
+	{
+		OOOCheck(O_strcmp(OOOICall(iError, toString), "UNKNOWN MODULE") == 0);
+		OOOCheck(pData == NULL);
+		OOOCheck(0 == uSize);
+		OOOF(szName) = "BANANA";
+		OOOICall(OOOCast(OOOIRepository, OOOF(pMockRepository)), get, OOOCast(OOOIRepositoryData, OOOThis));
+	}
+	else if (O_strcmp(OOOF(szName), "BANANA") == 0 && !OOOF(bBanana))
+	{
+		OOOCheck(O_strcmp(OOOICall(iError, toString), "UNKNOWN MODULE") == 0);
+		OOOCheck(pData == NULL);
+		OOOCheck(0 == uSize);
+		OOOCall(OOOF(pMockRepository), add, "APPLE", (unsigned char *) szApple, O_strlen(szApple) + 1);
+		OOOF(bApple) = TRUE;
+		OOOF(szName) = "APPLE";
+		OOOICall(OOOCast(OOOIRepository, OOOF(pMockRepository)), get, OOOCast(OOOIRepositoryData, OOOThis));
+	}
+	else if (O_strcmp(OOOF(szName), "APPLE") == 0 && OOOF(bApple))
+	{
+		OOOCheck(iError == NULL);
+		OOOCheck(O_strcmp((char *) pData, szApple) == 0);
+		OOOCheck(O_strlen(szApple) + 1 == uSize);
+		OOOF(szName) = "PEAR";
+		OOOICall(OOOCast(OOOIRepository, OOOF(pMockRepository)), get, OOOCast(OOOIRepositoryData, OOOThis));
+	}
+	else if (O_strcmp(OOOF(szName), "PEAR") == 0 && !OOOF(bPear))
+	{
+		OOOCheck(O_strcmp(OOOICall(iError, toString), "UNKNOWN MODULE") == 0);
+		OOOCheck(pData == NULL);
+		OOOCheck(0 == uSize);
+		OOOCall(OOOF(pMockRepository), add, "BANANA", (unsigned char *) szBanana, O_strlen(szBanana) + 1);
+		OOOF(bBanana) = TRUE;
+		OOOF(szName) = "BANANA";
+		OOOICall(OOOCast(OOOIRepository, OOOF(pMockRepository)), get, OOOCast(OOOIRepositoryData, OOOThis));
+	}
+	else if (O_strcmp(OOOF(szName), "BANANA") == 0 && OOOF(bBanana))
+	{
+		OOOCheck(iError == NULL);
+		OOOCheck(O_strcmp((char *) pData, szBanana) == 0);
+		OOOCheck(O_strlen(szBanana) + 1 == uSize);
+		OOOF(szName) = "PEAR";
+		OOOCall(OOOF(pMockRepository), add, "PEAR", (unsigned char *) szPear, O_strlen(szPear) + 1);
+		OOOF(bPear) = TRUE;
+		OOOF(szName) = "PEAR";
+		OOOICall(OOOCast(OOOIRepository, OOOF(pMockRepository)), get, OOOCast(OOOIRepositoryData, OOOThis));
+	}
+	else if (O_strcmp(OOOF(szName), "PEAR") == 0 && OOOF(bPear))
+	{
+		OOOCheck(iError == NULL);
+		OOOCheck(O_strcmp((char *) pData, szPear) == 0);
+		OOOCheck(O_strlen(szPear) + 1 == uSize);
+	}
+	else
+	{
+		OOOCheck(FALSE);
+	}
+}
+OOOMethodEnd
+
+OOOConstructor()
+{
+	#define OOOInterface OOOIRepositoryData
+	OOOMapVirtuals
+		OOOMapVirtual(getName)
+		OOOMapVirtual(load)
+	OOOMapVirtualsEnd
+	#undef OOOInterface
+
+	OOOMapMethods
+		OOOMapMethod(start)
+	OOOMapMethodsEnd
+
+	OOOF(pMockRepository) = OOOConstruct(MockRepository);
+}
+OOOConstructorEnd
+#undef OOOClass
+
 
 OOOTest(MockRepository)
 {
-	MockRepository * pMockRepository = OOOConstruct(MockRepository);
-	OOOIRepository * iRepository = OOOCast(OOOIRepository, pMockRepository);
-	unsigned char * module = OOOICall(iRepository, get, "HelloWorld_Module");
-	unsigned int index = 0;
-
-	/* Should return the correct module contents */
-	for (index = 0; index < moduleTestSize; index++)
-	{
-		OOOCheck(moduleTest[index] == module[index]);
-	}
-
-	/* Should return NULL for unknown modules */
-	OOOCheck(NULL == OOOICall(iRepository, get, "SomeModule"));
-
-	OOODestroy(pMockRepository);
+	TestRepositoryData * pTestRepositoryData = OOOConstruct(TestRepositoryData);
+	OOOCall(pTestRepositoryData, start);
+	OOODestroy(pTestRepositoryData);
 }

@@ -4,10 +4,13 @@
 #include "OOOCode.h"
 #include "OOOIRepository.h"
 #include "OOOIRequirer.h"
+#include "OOOIRequire.h"
+#include "OOOICache.h"
 
 #define OOOClass OOORequire
-OOODeclare(OOOIRepository * iRepository)
+OOODeclare(OOOIRepository * iRepository, OOOICache * iCache)
 	OOOImplements
+		OOOImplement(OOOIRequire)
 	OOOImplementsEnd
 	OOOExports
 		OOOExport(void, get, char * szModuleName, OOOIRequirer * iRequirer)

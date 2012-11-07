@@ -2,10 +2,11 @@
 #define OOOIRepository_H
 
 #include "OOOCode.h"
+#include "OOOIRepositoryData.h"
 
 #define OOOInterface OOOIRepository
 OOOVirtuals
-	OOOVirtual(unsigned char *, get, char * szModuleName)
+	OOOVirtual(void, get, OOOIRepositoryData * iRepositoryData)
 OOOVirtualsEnd
 #undef OOOInterface
 
