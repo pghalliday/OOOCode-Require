@@ -15,10 +15,10 @@ size_t HelloWorld_Module_uSize = sizeof(HelloWorld_Module);
 
 OOOModuleDeclare(HelloWorld);
 
-#define OOOClass TestRequirer
+#define OOOClass TestRequireModule
 OOODeclare()
 	OOOImplements
-		OOOImplement(OOOIRequirer)
+		OOOImplement(OOOIRequireModule)
 	OOOImplementsEnd
 	OOOExports
 		OOOExport(void, start)
@@ -43,18 +43,21 @@ OOODestructorEnd
 OOOMethod(void, start)
 {
 	// Require the HelloWorld_Module
-	OOOCall(OOOF(pRequire), get, "HelloWorld_Module", OOOCast(OOOIRequirer, OOOThis));
+	OOOCall(OOOF(pRequire), get, OOOCast(OOOIRequireModule, OOOThis));
 }
 OOOMethodEnd
 
-OOOMethod(void, module, OOOIError * iError, char * szModuleName, OOOModule * pModule)
+OOOMethod(char *, getName)
+{
+	return "HelloWorld_Module";
+}
+OOOMethodEnd
+
+OOOMethod(void, module, OOOIError * iError, OOOModule * pModule)
 {
 	if (!OOOF(pModule))
 	{
 		OOOCheck(iError == NULL);
-
-		/* name should be correct */
-		OOOCheck(O_strcmp(szModuleName, "HelloWorld_Module") == 0);
 
 		/* Should be able to link the HelloWorld class */
 		OOOModuleLink(pModule, HelloWorld);
@@ -74,14 +77,11 @@ OOOMethod(void, module, OOOIError * iError, char * szModuleName, OOOModule * pMo
 		OOOF(pModule) = pModule;
 
 		/* now lets see what happens if we get the module again */
-		OOOCall(OOOF(pRequire), get, "HelloWorld_Module", OOOCast(OOOIRequirer, OOOThis));
+		OOOCall(OOOF(pRequire), get, OOOCast(OOOIRequireModule, OOOThis));
 	}
 	else
 	{
 		OOOCheck(iError == NULL);
-
-		/* name should be correct */
-		OOOCheck(O_strcmp(szModuleName, "HelloWorld_Module") == 0);
 
 		/* should get the same pModule instance */
 		OOOCheck(OOOF(pModule) == pModule);
@@ -96,8 +96,9 @@ OOOMethodEnd
 
 OOOConstructor()
 {
-	#define OOOInterface OOOIRequirer
+	#define OOOInterface OOOIRequireModule
 	OOOMapVirtuals
+		OOOMapVirtual(getName)
 		OOOMapVirtual(module)
 	OOOMapVirtualsEnd
 	#undef OOOInterface
@@ -116,7 +117,7 @@ OOOConstructorEnd
 
 OOOTest(OOORequire)
 {
-	TestRequirer * testRequirer = OOOConstruct(TestRequirer);
-	OOOCall(testRequirer, start);
-	OOODestroy(testRequirer);
+	TestRequireModule * testRequireModule = OOOConstruct(TestRequireModule);
+	OOOCall(testRequireModule, start);
+	OOODestroy(testRequireModule);
 }
