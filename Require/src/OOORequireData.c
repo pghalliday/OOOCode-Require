@@ -1,6 +1,6 @@
-#include "OOORequireRepositoryData.h"
+#include "OOORequireData.h"
 
-#define OOOClass OOORequireRepositoryData
+#define OOOClass OOORequireData
 
 OOOPrivateData
 	char * szName;

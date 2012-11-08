@@ -1,5 +1,5 @@
 #include "OOORequire.h"
-#include "OOORequireRepositoryData.h"
+#include "OOORequireData.h"
 #include "OOOError.h"
 
 #define OOOClass OOORequire
@@ -20,7 +20,7 @@ struct _ModuleEntry
 OOOPrivateData
 	OOOIRepository * iRepository;
 	ModuleEntry * pModules;
-	OOORequireRepositoryData * pRequireRepositoryData;
+	OOORequireData * pRequireData;
 OOOPrivateDataEnd
 
 OOODestructor
@@ -55,7 +55,7 @@ OOODestructorEnd
 OOOMethod(void, link, OOOIError * iError, char * szModuleName, unsigned char * pData, size_t uSize, OOOIRequirer * iRequirer)
 {
 	OOOModule * pModule = NULL;
-	OOORequireRepositoryData * pRequireRepositoryData = OOOF(pRequireRepositoryData);
+	OOORequireData * pRequireData = OOOF(pRequireData);
 	if (iError)
 	{
 		OOOICall(iRequirer, module, iError, szModuleName, NULL);
@@ -100,7 +100,7 @@ OOOMethod(void, link, OOOIError * iError, char * szModuleName, unsigned char * p
 			OOODestroy(pError);
 		}
 	}
-	OOODestroy(pRequireRepositoryData);
+	OOODestroy(pRequireData);
 }
 OOOMethodEnd
 
@@ -124,8 +124,8 @@ OOOMethod(void, get, char * szModuleName, OOOIRequirer * iRequirer)
 	}
 	else
 	{
-		OOOF(pRequireRepositoryData) = OOOConstruct(OOORequireRepositoryData, szModuleName, OOOCast(OOOIRequire, OOOThis), iRequirer);
-		OOOICall(OOOF(iRepository), get, OOOCast(OOOIRepositoryData, OOOF(pRequireRepositoryData)));
+		OOOF(pRequireData) = OOOConstruct(OOORequireData, szModuleName, OOOCast(OOOIRequire, OOOThis), iRequirer);
+		OOOICall(OOOF(iRepository), get, OOOCast(OOOIRepositoryData, OOOF(pRequireData)));
 	}
 }
 OOOMethodEnd

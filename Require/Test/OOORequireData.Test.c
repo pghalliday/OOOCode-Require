@@ -1,5 +1,5 @@
 #include "OOOUnitTestDefines.h"
-#include "OOORequireRepositoryData.h"
+#include "OOORequireData.h"
 #include "OOOInMemoryRepository.h"
 
 static char * szTest = "This is a test";
@@ -19,8 +19,8 @@ OOODeclare()
 OOODeclareEnd
 
 OOOPrivateData
-	OOORequireRepositoryData * pInvalidRepositoryData;
-	OOORequireRepositoryData * pValidRepositoryData;
+	OOORequireData * pInvalidRepositoryData;
+	OOORequireData * pValidRepositoryData;
 	OOOInMemoryRepository * pRepository;
 	unsigned int uTest;
 OOOPrivateDataEnd
@@ -100,13 +100,13 @@ OOOConstructor()
 
 	OOOF(pRepository) = OOOConstruct(OOOInMemoryRepository);
 	OOOCall(OOOF(pRepository), add, "KNOWN", (unsigned char *) szTest, O_strlen(szTest) + 1);
-	OOOF(pValidRepositoryData) = OOOConstruct(OOORequireRepositoryData, "KNOWN", OOOCast(OOOIRequire, OOOThis), OOOCast(OOOIRequirer, OOOThis));
-	OOOF(pInvalidRepositoryData) = OOOConstruct(OOORequireRepositoryData, "UNKNOWN", OOOCast(OOOIRequire, OOOThis), OOOCast(OOOIRequirer, OOOThis));
+	OOOF(pValidRepositoryData) = OOOConstruct(OOORequireData, "KNOWN", OOOCast(OOOIRequire, OOOThis), OOOCast(OOOIRequirer, OOOThis));
+	OOOF(pInvalidRepositoryData) = OOOConstruct(OOORequireData, "UNKNOWN", OOOCast(OOOIRequire, OOOThis), OOOCast(OOOIRequirer, OOOThis));
 }
 OOOConstructorEnd
 #undef OOOClass
 
-OOOTest(OOORequireRepositoryData)
+OOOTest(OOORequireData)
 {
 	TestRepositoryDataListener * pTestRepositoryDataListener = OOOConstruct(TestRepositoryDataListener);
 	OOOCall(pTestRepositoryDataListener, start);
