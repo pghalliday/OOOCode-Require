@@ -1,9 +1,9 @@
 #include "OOOUnitTestDefines.h"
 #include "OOORequire.h"
 
-#include "MockRepository.h"
+#include "OOOInMemoryRepository.h"
 #include "MockCache.h"
-#include "OOOBufferedLog.h"
+#include "OOOTestLog.h"
 
 #include "HelloWorld.h"
 
@@ -26,7 +26,7 @@ OOODeclare()
 OOODeclareEnd
 
 OOOPrivateData
-	MockRepository * pMockRepository;
+	OOOInMemoryRepository * pRepository;
 	MockCache * pMockCache;
 	OOORequire * pRequire;
 	OOOModule * pModule;
@@ -35,7 +35,7 @@ OOOPrivateDataEnd
 OOODestructor
 {
 	OOODestroy(OOOF(pRequire));
-	OOODestroy(OOOF(pMockRepository));
+	OOODestroy(OOOF(pRepository));
 	OOODestroy(OOOF(pMockCache));
 }
 OOODestructorEnd
@@ -61,7 +61,7 @@ OOOMethod(void, module, OOOIError * iError, char * szModuleName, OOOModule * pMo
 
 		/* Should be able to instantiate the HelloWorld class */
 		{
-			OOOBufferedLog * pLog = OOOConstruct(OOOBufferedLog);
+			OOOTestLog * pLog = OOOConstruct(OOOTestLog);
 			HelloWorld * pHelloWorld = OOOConstruct(HelloWorld, OOOCast(OOOILog, pLog));
 
 			OOOCall(pHelloWorld, sayHello);
@@ -106,10 +106,10 @@ OOOConstructor()
 		OOOMapMethod(start)
 	OOOMapMethodsEnd
 
-	OOOF(pMockRepository) = OOOConstruct(MockRepository);
-	OOOCall(OOOF(pMockRepository), add, "HelloWorld_Module", HelloWorld_Module, HelloWorld_Module_uSize);
+	OOOF(pRepository) = OOOConstruct(OOOInMemoryRepository);
+	OOOCall(OOOF(pRepository), add, "HelloWorld_Module", HelloWorld_Module, HelloWorld_Module_uSize);
 	OOOF(pMockCache) = OOOConstruct(MockCache);
-	OOOF(pRequire) = OOOConstruct(OOORequire, OOOCast(OOOIRepository, OOOF(pMockRepository)), OOOCast(OOOICache, OOOF(pMockCache)));
+	OOOF(pRequire) = OOOConstruct(OOORequire, OOOCast(OOOIRepository, OOOF(pRepository)), OOOCast(OOOICache, OOOF(pMockCache)));
 }
 OOOConstructorEnd
 #undef OOOClass

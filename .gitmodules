@@ -16,3 +16,6 @@
 [submodule "Require/submodules/Error"]
 	path = Require/submodules/Error
 	url = https://github.com/pghalliday/OOOCode-Error.git
+[submodule "Require/submodules/Repository"]
+	path = Require/submodules/Repository
+	url = https://github.com/pghalliday/OOOCode-Repository.git

@@ -1,6 +1,6 @@
 #include "OOOUnitTestDefines.h"
 #include "OOORequireRepositoryData.h"
-#include "MockRepository.h"
+#include "OOOInMemoryRepository.h"
 
 static char * szTest = "This is a test";
 
@@ -21,7 +21,7 @@ OOODeclareEnd
 OOOPrivateData
 	OOORequireRepositoryData * pInvalidRepositoryData;
 	OOORequireRepositoryData * pValidRepositoryData;
-	MockRepository * pMockRepository;
+	OOOInMemoryRepository * pRepository;
 	unsigned int uTest;
 OOOPrivateDataEnd
 
@@ -29,16 +29,16 @@ OOODestructor
 {
 	OOODestroy(OOOF(pInvalidRepositoryData));
 	OOODestroy(OOOF(pValidRepositoryData));
-	OOODestroy(OOOF(pMockRepository));
+	OOODestroy(OOOF(pRepository));
 }
 OOODestructorEnd
 
 OOOMethod(void, start)
 {
 	OOOF(uTest) = KNOWN_TEST;
-	OOOICall(OOOCast(OOOIRepository, OOOF(pMockRepository)), get, OOOCast(OOOIRepositoryData, OOOF(pValidRepositoryData)));
+	OOOICall(OOOCast(OOOIRepository, OOOF(pRepository)), get, OOOCast(OOOIRepositoryData, OOOF(pValidRepositoryData)));
 	OOOF(uTest) = UNKNOWN_TEST;
-	OOOICall(OOOCast(OOOIRepository, OOOF(pMockRepository)), get, OOOCast(OOOIRepositoryData, OOOF(pInvalidRepositoryData)));
+	OOOICall(OOOCast(OOOIRepository, OOOF(pRepository)), get, OOOCast(OOOIRepositoryData, OOOF(pInvalidRepositoryData)));
 }
 OOOMethodEnd
 
@@ -98,8 +98,8 @@ OOOConstructor()
 		OOOMapMethod(start)
 	OOOMapMethodsEnd
 
-	OOOF(pMockRepository) = OOOConstruct(MockRepository);
-	OOOCall(OOOF(pMockRepository), add, "KNOWN", (unsigned char *) szTest, O_strlen(szTest) + 1);
+	OOOF(pRepository) = OOOConstruct(OOOInMemoryRepository);
+	OOOCall(OOOF(pRepository), add, "KNOWN", (unsigned char *) szTest, O_strlen(szTest) + 1);
 	OOOF(pValidRepositoryData) = OOOConstruct(OOORequireRepositoryData, "KNOWN", OOOCast(OOOIRequire, OOOThis), OOOCast(OOOIRequirer, OOOThis));
 	OOOF(pInvalidRepositoryData) = OOOConstruct(OOORequireRepositoryData, "UNKNOWN", OOOCast(OOOIRequire, OOOThis), OOOCast(OOOIRequirer, OOOThis));
 }
