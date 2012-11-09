@@ -28,8 +28,8 @@ typedef void (* Uninit)(void);
 typedef struct _ModuleEntry ModuleEntry;
 struct _ModuleEntry
 {
-	char * szModuleName;
-	unsigned char * pModuleData;
+	char * szName;
+	unsigned char * pData;
 	OOOModule * pModule;
 	Uninit uninit;
 	ModuleEntry * pNext;
@@ -56,20 +56,36 @@ OOODestructor
 		}
 		else
 		{
-			O_debug("WARNING: Code module has no uninit method: %s\n", pLastEntry->szModuleName);
+			O_debug("WARNING: Code module has no uninit method: %s\n", pLastEntry->szName);
 		}
 
-		if (O_dl_unlink_code_module(pLastEntry->pModuleData) != GOOD)
+		if (O_dl_unlink_code_module(pLastEntry->pData) != GOOD)
 		{
-			O_debug("WARNING: Failed to unlink code module: %s\n", pLastEntry->szModuleName);
+			O_debug("WARNING: Failed to unlink code module: %s\n", pLastEntry->szName);
 		}
 
-		O_free(pLastEntry->szModuleName);
+		O_free(pLastEntry->szName);
 		O_free(pLastEntry);
 	}
 	O_free(OOOF(aRepositories));
 }
 OOODestructorEnd
+
+OOOMethod(void, error, RepositoryData * pRepositoryData, OOOIRequireModule * iRequireModule, char * szError)
+{
+	OOOError * pError = OOOConstruct(OOOError, szError);
+	OOOICall(iRequireModule, module, OOOCast(OOOIError, pError), NULL);
+	OOODestroy(pError);
+	OOODestroy(pRepositoryData);
+}
+OOOMethodEnd
+
+OOOMethod(void, module, RepositoryData * pRepositoryData, OOOIRequireModule * iRequireModule, OOOModule * pModule)
+{
+	OOOICall(iRequireModule, module, NULL, pModule);
+	OOODestroy(pRepositoryData);
+}
+OOOMethodEnd
 
 OOOMethod(void, link, RepositoryData * pRepositoryData, OOOIError * iError, unsigned char * pData, size_t uSize, OOOIRequireModule * iRequireModule, unsigned int uCount)
 {
@@ -83,10 +99,7 @@ OOOMethod(void, link, RepositoryData * pRepositoryData, OOOIError * iError, unsi
 		}
 		else
 		{
-			OOOError * pError = OOOConstruct(OOOError, "NOT FOUND IN ANY REPOSITORY");
-			OOOICall(iRequireModule, module, OOOCast(OOOIError, pError), NULL);
-			OOODestroy(pError);
-			OOODestroy(pRepositoryData);
+			OOOC(error, pRepositoryData, iRequireModule, "NOT FOUND IN ANY REPOSITORY");
 		}
 	}
 	else
@@ -101,34 +114,27 @@ OOOMethod(void, link, RepositoryData * pRepositoryData, OOOIError * iError, unsi
 				{
 					ModuleEntry * pEntry = O_malloc(sizeof(ModuleEntry));
 					pEntry->pModule = pModule;
-					pEntry->pModuleData = pData;
-					pEntry->szModuleName = O_strdup(OOOICall(iRequireModule, getName));
+					pEntry->pData = pData;
+					pEntry->szName = O_strdup(OOOICall(iRequireModule, getName));
 					pEntry->uninit = O_dl_find_function(1);
 					pEntry->pNext = OOOF(pModules);
 					OOOF(pModules) = pEntry;
-					OOOICall(iRequireModule, module, NULL, pModule);
+					OOOC(module, pRepositoryData, iRequireModule, pModule);
 				}
 				else
 				{
-					OOOError * pError = OOOConstruct(OOOError, "INIT METHOD DID NOT RETURN A MODULE");
-					OOOICall(iRequireModule, module, OOOCast(OOOIError, pError), NULL);
-					OOODestroy(pError);
+					OOOC(error, pRepositoryData, iRequireModule, "INIT METHOD DID NOT RETURN A MODULE");
 				}
 			}
 			else
 			{
-				OOOError * pError = OOOConstruct(OOOError, "FAILED TO FIND INIT METHOD");
-				OOOICall(iRequireModule, module, OOOCast(OOOIError, pError), NULL);
-				OOODestroy(pError);
+				OOOC(error, pRepositoryData, iRequireModule, "FAILED TO FIND INIT METHOD");
 			}
 		}
 		else
 		{
-			OOOError * pError = OOOConstruct(OOOError, "FAILED TO LINK MODULE");
-			OOOICall(iRequireModule, module, OOOCast(OOOIError, pError), NULL);
-			OOODestroy(pError);
+			OOOC(error, pRepositoryData, iRequireModule, "FAILED TO LINK DLL");
 		}
-		OOODestroy(pRepositoryData);
 	}
 }
 OOOMethodEnd
@@ -140,7 +146,7 @@ OOOMethod(void, get, OOOIRequireModule * iRequireModule)
 	char * szName = OOOICall(iRequireModule, getName);
 	while (pEntry)
 	{
-		if (O_strcmp(pEntry->szModuleName, szName) == 0)
+		if (O_strcmp(pEntry->szName, szName) == 0)
 		{
 			pModule = pEntry->pModule;
 			break;
