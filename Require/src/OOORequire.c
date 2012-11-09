@@ -216,8 +216,7 @@ OOOMethod(void, load, OOOIError * iError, unsigned char * pData, size_t uSize)
 	OOOF(uCount)++;
 
 	/* call the private link method directly */
-	/* TODO: make this type of call more friendly, at the moment it uses knowledge of OOOCode internals */
-	_OOOPCall(OOORequire, OOOF(pRequire), link, OOOThis, iError, pData, uSize, OOOF(iRequireModule), OOOF(uCount));
+	OOOPCCall(OOORequire, OOOF(pRequire), link, OOOThis, iError, pData, uSize, OOOF(iRequireModule), OOOF(uCount));
 }
 OOOMethodEnd
 
