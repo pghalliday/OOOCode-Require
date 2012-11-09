@@ -39,7 +39,6 @@ OOOPrivateData
 	OOOIRepository ** aRepositories;
 	size_t uRepositoriesLength;
 	ModuleEntry * pModules;
-	RepositoryData * pRequireData;
 OOOPrivateDataEnd
 
 OOODestructor
@@ -72,22 +71,22 @@ OOODestructor
 }
 OOODestructorEnd
 
-OOOMethod(void, link, OOOIError * iError, unsigned char * pData, size_t uSize, OOOIRequireModule * iRequireModule, unsigned int uCount)
+OOOMethod(void, link, RepositoryData * pRepositoryData, OOOIError * iError, unsigned char * pData, size_t uSize, OOOIRequireModule * iRequireModule, unsigned int uCount)
 {
 	OOOModule * pModule = NULL;
-	RepositoryData * pRequireData = OOOF(pRequireData);
 	if (iError)
 	{
 		/* try the next repository if there is one */
 		if (uCount < OOOF(uRepositoriesLength))
 		{
-			OOOICall(OOOF(aRepositories)[uCount], get, OOOCast(OOOIRepositoryData, OOOF(pRequireData)));
+			OOOICall(OOOF(aRepositories)[uCount], get, OOOCast(OOOIRepositoryData, pRepositoryData));
 		}
 		else
 		{
 			OOOError * pError = OOOConstruct(OOOError, "NOT FOUND IN ANY REPOSITORY");
 			OOOICall(iRequireModule, module, OOOCast(OOOIError, pError), NULL);
 			OOODestroy(pError);
+			OOODestroy(pRepositoryData);
 		}
 	}
 	else
@@ -129,8 +128,8 @@ OOOMethod(void, link, OOOIError * iError, unsigned char * pData, size_t uSize, O
 			OOOICall(iRequireModule, module, OOOCast(OOOIError, pError), NULL);
 			OOODestroy(pError);
 		}
+		OOODestroy(pRepositoryData);
 	}
-	OOODestroy(pRequireData);
 }
 OOOMethodEnd
 
@@ -155,8 +154,8 @@ OOOMethod(void, get, OOOIRequireModule * iRequireModule)
 	}
 	else
 	{
-		OOOF(pRequireData) = OOOConstruct(RepositoryData, szName, OOOThis, iRequireModule);
-		OOOICall(OOOF(aRepositories)[0], get, OOOCast(OOOIRepositoryData, OOOF(pRequireData)));
+		RepositoryData * pRepositoryData = OOOConstruct(RepositoryData, szName, OOOThis, iRequireModule);
+		OOOICall(OOOF(aRepositories)[0], get, OOOCast(OOOIRepositoryData, pRepositoryData));
 	}
 }
 OOOMethodEnd
@@ -212,7 +211,7 @@ OOOMethod(void, load, OOOIError * iError, unsigned char * pData, size_t uSize)
 
 	/* call the private link method directly */
 	/* TODO: make this type of call more friendly, at the moment it uses knowledge of OOOCode internals */
-	_OOOPCall(OOORequire, OOOF(pRequire), link, iError, pData, uSize, OOOF(iRequireModule), OOOF(uCount));
+	_OOOPCall(OOORequire, OOOF(pRequire), link, OOOThis, iError, pData, uSize, OOOF(iRequireModule), OOOF(uCount));
 }
 OOOMethodEnd
 
