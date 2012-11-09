@@ -7,7 +7,7 @@
 #include "OOOICache.h"
 
 #define OOOClass OOORequire
-OOODeclare(OOOIRepository * iRepository, OOOICache * iCache)
+OOODeclare(OOOIRepository ** aRepositories, size_t uRepositoriesLength)
 	OOOImplements
 	OOOImplementsEnd
 	OOOExports

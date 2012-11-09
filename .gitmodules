@@ -19,3 +19,6 @@
 [submodule "Require/submodules/Repository"]
 	path = Require/submodules/Repository
 	url = https://github.com/pghalliday/OOOCode-Repository.git
+[submodule "Require/submodules/Cache"]
+	path = Require/submodules/Cache
+	url = https://github.com/pghalliday/OOOCode-Cache.git

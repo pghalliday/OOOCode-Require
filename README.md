@@ -7,6 +7,7 @@ An OOOCode module for managing and dynamically linking shared OOOCode modules
 
 - Should load and link modules from a passed in repository structure
 - Should only load and link the module once, subsequent calls to require should provide the same instance
+- Should search through a list of passed in repositories in order
 
 ## API
 
@@ -23,9 +24,11 @@ An OOOCode module for managing and dynamically linking shared OOOCode modules
 OOOModuleDeclare(HelloWorld);
 
 #define OOOClass MyApplication
+#define REPOSITORY_COUNT	1
+
 OOODeclare()
 	OOOImplements
-		OOOImplement(OOOIRequirer)
+		OOOImplement(OOOIRequireModule)
 	OOOImplementsEnd
 	OOOExports
 		OOOExport(void, start)
@@ -33,13 +36,13 @@ OOODeclare()
 OOODeclareEnd
 
 OOOPrivateData
-	Repository * pRepository;
+	OOOIRepository ** aRepositories[REPOSITORY_COUNT];
 	OOORequire * pRequire;
 OOOPrivateDataEnd
 
 OOODestructor
 {
-	OOODestroy(OOOF(pRequire));
+	OOOIDestroy(OOOF(aRepositories)[0]);
 	OOODestroy(OOOF(pRepository));
 }
 OOODestructorEnd
@@ -47,11 +50,17 @@ OOODestructorEnd
 OOOMethod(void, start)
 {
 	// Require the HelloWorld_Module
-	OOOCall(OOOF(pRequire), get, "HelloWorld_Module", OOOCast(OOOIRequirer, OOOThis));
+	OOOCall(OOOF(pRequire), get, OOOCast(OOOIRequireModule, OOOThis));
 }
 OOOMethodEnd
 
-OOOMethod(void, module, char * szModuleName, OOOModule * pModule)
+OOOMethod(char *, getName)
+{
+	return "HelloWorld";
+}
+OOOMethodEnd
+
+OOOMethod(void, module, OOOModule * pModule)
 {
 	/* name should be correct */
 	if (O_strcmp(szModuleName, "HelloWorld_Module") == 0)
@@ -75,8 +84,11 @@ OOOMethodEnd
 
 OOOConstructor()
 {
+	Repository * pRepository;
+
 	#define OOOInterface OOOIRequirer
 	OOOMapVirtuals
+		OOOMapVirtual(getName)
 		OOOMapVirtual(module)
 	OOOMapVirtualsEnd
 	#undef OOOInterface
@@ -85,8 +97,12 @@ OOOConstructor()
 		OOOMapMethod(start)
 	OOOMapMethodsEnd
 
-	OOOF(pRepository) = OOOConstruct(Repository);
-	OOOF(pRequire) = OOOConstruct(OOORequire, OOOCast(OOOIRepository, OOOF(pRepository)));
+	/* Repository class should implement the OOOIRepository interface */
+	pRepository = OOOConstruct(Repository);
+
+	/* Pass in a list of repositories in the order that they should be searched */
+	OOOF(aRepositories)[0] = OOOCast(OOOIRepository, pRepository);
+	OOOF(pRequire) = OOOConstruct(OOORequire, OOOF(aRepositories), REPOSITORY_COUNT);
 }
 OOOConstructorEnd
 #undef OOOClass
@@ -94,9 +110,7 @@ OOOConstructorEnd
 
 ## Roadmap
 
-* Should cache modules in the filesystem using a managed cache
-- Should load and link modules from the passed in server location if not found in the repository structure
-- Should load and link modules from the passed in track if server cannot be reached
+* should support asynchronous repositories
 
 ## Contributing
 
